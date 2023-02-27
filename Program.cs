@@ -3,19 +3,25 @@ List<string> movieData = new List<string>();
 bool menuQuit = false;
 // Putting the reading of the data into a try block so it doesn't immediately crash if file is not found
 try {
+    int maxMovieID = 0;
     StreamReader sr = new StreamReader(dir + "\\ml-latest-small\\movies.csv");
     // Reading through the first line to remove the formatting line at top of the file
     sr.ReadLine();
     while (sr.Peek() >= 0){
     // Reading current line of file and splitting on the comma to get all 3 pieces of data
-    string currentLine = sr.ReadLine();
-    string[] splitLine = currentLine.Split(",");
-    // Checking if movieID provided by the .csv file already is in list to avoid duplicate entries
-    if (movieData.Contains(splitLine[0])){
-        continue;
+        string currentLine = sr.ReadLine();
+        string[] splitLine = currentLine.Split(",");
+        // Checking if movieID provided by the .csv file already is in list to avoid duplicate entries
+        if (movieData.Contains(splitLine[0])){
+            continue;
+        }
+        // Finding max id value to make adding movies easier later
+        if (Convert.ToInt64(splitLine[0]) > maxMovieID){
+            maxMovieID = (int)Convert.ToInt64(splitLine[0]);
+        }
+        movieData.AddRange(splitLine);
+        movieData.Add(Environment.NewLine);
     }
-
-}
     sr.Close();
 }
 // catch block for file not found errors
@@ -32,19 +38,14 @@ catch (IOException){
 
 // Printing the visible menu choices
 while (!menuQuit){
-    Console.WriteLine("Please enter 1 to view the current entries of the movie library, 2 to add an entry, or 3 to exit");
+    // Break line before printing the menu to fix a loop formatting bug
+    Console.WriteLine($"\nPlease enter 1 to view the current entries of the movie library, 2 to add an entry, or 3 to exit");
     string userInput = Console.ReadLine();
     switch (userInput){
         // TODO: Input method broken due to random commas in titles, fix parsing methods to fix printing errors
         case "1":
-            int i = 0;
             foreach (string movie in movieData){
                 Console.Write(movie + " ");
-                i++;
-                if (i == 3){
-                    Console.Write($"\n");
-                    i = 0;
-                }
             }
             break;
         // TODO: Open StreamWriter to append data to file and list, check against list to ensure against duplicate values (After list formatting is corrected)
