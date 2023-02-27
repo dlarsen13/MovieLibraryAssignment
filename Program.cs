@@ -14,8 +14,9 @@ try {
     if (movieData.Contains(splitLine[0])){
         continue;
     }
-    movieData.AddRange(splitLine);
+
 }
+    sr.Close();
 }
 // catch block for file not found errors
 catch (FileNotFoundException){
@@ -24,11 +25,37 @@ catch (FileNotFoundException){
     string filePath = Console.ReadLine();
     getFileData(filePath, movieData);
 }
+catch (IOException){
+    Console.WriteLine("Error parsing file, restarting process");
+    getFileData((dir + "\\ml-latest-small\\movies.csv"), movieData);
+}
 
 // Printing the visible menu choices
 while (!menuQuit){
-    Console.WriteLine("Please enter 1 to view the current entries of the movie library, 2 to add an entry. or 3 to exit");
-    
+    Console.WriteLine("Please enter 1 to view the current entries of the movie library, 2 to add an entry, or 3 to exit");
+    string userInput = Console.ReadLine();
+    switch (userInput){
+        // TODO: Input method broken due to random commas in titles, fix parsing methods to fix printing errors
+        case "1":
+            int i = 0;
+            foreach (string movie in movieData){
+                Console.Write(movie + " ");
+                i++;
+                if (i == 3){
+                    Console.Write($"\n");
+                    i = 0;
+                }
+            }
+            break;
+        // TODO: Open StreamWriter to append data to file and list, check against list to ensure against duplicate values (After list formatting is corrected)
+        case "2":
+            break;
+        case "3":
+            menuQuit = true;
+            break;
+
+    }
+
 }
 
 
