@@ -1,4 +1,7 @@
-﻿string dir = Directory.GetCurrentDirectory();
+﻿using NLog;
+
+string dir = Directory.GetCurrentDirectory();
+var logger = LogManager.LoadConfiguration(dir + "\\nlog.config").GetCurrentClassLogger();
 List<string> movieData = new List<string>();
 bool menuQuit = false;
 int maxMovieID = 0;
@@ -26,17 +29,20 @@ try {
     sr.Close();
 }
 // catch block for file not found errors
-catch (FileNotFoundException){
+catch (FileNotFoundException e){
+    logger.Error(e.Message);
     Console.WriteLine("File not found");
     Console.WriteLine("Please enter the filepath to movies.csv");
     string filePath = Console.ReadLine();
     getFileData(filePath, movieData);
 }
-catch (IOException){
+catch (IOException e){
+    logger.Error(e.Message);
     Console.WriteLine("Error parsing file, restarting process");
     getFileData((dir + "\\ml-latest-small\\movies.csv"), movieData);
 }
 catch (Exception e){
+    logger.Error(e.Message);
     Console.WriteLine("Error parsing file. Please check your file path and try again");
 }
 
@@ -89,6 +95,7 @@ while (!menuQuit){
                 sw.Write(Environment.NewLine);
             }
             catch (Exception e){
+                logger.Error(e.Message);
                 Console.WriteLine("Error adding entry. Please try again");
             }
             break;
